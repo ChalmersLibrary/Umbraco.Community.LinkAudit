@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+
+    <!-- Razor Class Library: serve the backoffice assets in wwwroot at the site root
+         (i.e. /App_Plugins/UmbracoCommunity.LinkAudit/...) instead of under _content/. -->
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
+  </PropertyGroup>
+
+  <!-- NuGet package metadata -->
+  <PropertyGroup>
+    <PackageId>Umbraco.Community.LinkAudit</PackageId>
+    <Title>Link Audit</Title>
+    <Version>1.0.0-beta.1</Version>
+    <Authors>Chalmers Library</Authors>
+    <Description>A lightweight, single-purpose link auditor for Umbraco. Scans published content on a schedule (or on demand), reports broken external links and links that point at hosts you would rather keep internal — all from a read-only backoffice dashboard. Reads the content cache directly rather than crawling the rendered site.</Description>
+    <PackageTags>umbraco umbraco-marketplace plugin package links link-checker broken-links seo audit</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <!-- TODO: add a package icon: drop icon.png in the repo root and re-add <PackageIcon>icon.png</PackageIcon>. -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Views/analyzers warnings guard: keep the package warning-clean. -->
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Controllers use ASP.NET Core types (StatusCodes, etc.); a class library must reference the shared framework. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.5.0" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Ship README + icon inside the NuGet package (not the marketplace file, which is host-side). -->
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../icon.png" Pack="true" PackagePath="/" Condition="Exists('../../icon.png')" />
+  </ItemGroup>
+
+</Project>

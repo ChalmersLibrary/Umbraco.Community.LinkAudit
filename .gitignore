@@ -1,0 +1,21 @@
+## .NET / build output
+bin/
+obj/
+*.user
+*.suo
+*.lscache
+.vs/
+artifacts/
+*.nupkg
+*.snupkg
+
+## Rider / VS Code
+.idea/
+.vscode/
+
+## macOS
+.DS_Store
+
+## Umbraco test-site runtime data (if a test site is added under test/)
+test/**/umbraco/Data/
+test/**/appsettings.Local.json

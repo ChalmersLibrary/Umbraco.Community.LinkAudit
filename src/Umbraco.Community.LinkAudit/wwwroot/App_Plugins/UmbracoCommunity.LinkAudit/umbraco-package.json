@@ -1,0 +1,26 @@
+{
+    "id": "Umbraco.Community.LinkAudit",
+    "name": "Link Audit",
+    "version": "1.0.0",
+    "author": "Chalmers Library",
+    "extensions": [
+        {
+            "type": "dashboard",
+            "alias": "LinkAudit.Dashboard",
+            "name": "Link Audit Dashboard",
+            "element": "/App_Plugins/UmbracoCommunity.LinkAudit/dashboard.js",
+            "elementName": "linkaudit-dashboard",
+            "weight": -1,
+            "meta": {
+                "label": "Link Audit",
+                "pathname": "link-audit"
+            },
+            "conditions": [
+                {
+                    "alias": "Umb.Condition.SectionAlias",
+                    "match": "Umb.Section.Content"
+                }
+            ]
+        }
+    ]
+}
