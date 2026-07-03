@@ -26,8 +26,14 @@ public sealed class LinkAuditSettings
     /// </summary>
     public string? RootDocumentTypeAlias { get; set; }
 
-    /// <summary>Host patterns that should never appear in content links. Supports a leading "*." wildcard.</summary>
-    public string[] FlaggedHostPatterns { get; set; } = ["*.umbraco.io"];
+    /// <summary>
+    /// Host patterns that should never appear in content links. Supports a leading "*." wildcard.
+    /// Defaults to <c>["*.umbraco.io"]</c> when unconfigured — applied in <c>LinkAuditComposer</c> via
+    /// PostConfigure, NOT as a field initializer here: the configuration binder <em>appends</em> bound
+    /// array values to a non-empty default rather than replacing them, so a seed here would leak into
+    /// every consumer's configured list.
+    /// </summary>
+    public string[] FlaggedHostPatterns { get; set; } = [];
 
     /// <summary>
     /// Hosts to exclude from the audit completely — links to them are neither flagged nor probed nor reported.
