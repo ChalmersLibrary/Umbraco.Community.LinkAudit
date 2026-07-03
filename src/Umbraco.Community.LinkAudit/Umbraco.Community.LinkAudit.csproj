@@ -6,9 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
 
-    <!-- Razor Class Library: serve the backoffice assets in wwwroot at the site root
-         (i.e. /App_Plugins/UmbracoCommunity.LinkAudit/...) instead of under _content/. -->
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- Razor Class Library (Microsoft.NET.Sdk.Razor) packs wwwroot as static web assets.
+         StaticWebAssetBasePath=/ serves them at the site root (/App_Plugins/UmbracoCommunity.LinkAudit/...)
+         instead of under _content/. We ship no .cshtml views, so MVC Razor support is not needed. -->
     <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
   </PropertyGroup>
 
