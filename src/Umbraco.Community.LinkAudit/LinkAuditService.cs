@@ -47,7 +47,7 @@ public sealed partial class LinkAuditService : ILinkAuditService
         _logger = logger;
     }
 
-    [GeneratedRegex("https?://[^\\s\"'<>\\\\)}]+", RegexOptions.IgnoreCase)]
+    [GeneratedRegex("""(?:["']|\\+(?:u002[27]|["']))(https?://[^\s"'<>\\)}]+)""", RegexOptions.IgnoreCase)]
     private static partial Regex UrlRegex();
 
     public async Task<LinkAuditReport> RunAuditAsync(CancellationToken cancellationToken)
@@ -124,7 +124,7 @@ public sealed partial class LinkAuditService : ILinkAuditService
                                 foreach (Match m in UrlRegex().Matches(source))
                                 {
                                     linksScanned++;
-                                    Classify(m.Value, page, key, pageUrl, culture, prop.Alias, settings, seen, findings, externalRefs);
+                                    Classify(m.Groups[1].Value, page, key, pageUrl, culture, prop.Alias, settings, seen, findings, externalRefs);
                                 }
                             }
                         }
