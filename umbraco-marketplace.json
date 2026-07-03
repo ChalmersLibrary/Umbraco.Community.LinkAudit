@@ -10,5 +10,15 @@
     "LicenseTypes": [ "Free" ],
     "DocumentationUrl": "https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit",
     "IssueTrackerUrl": "https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/issues",
-    "Tags": [ "link checker", "broken links", "link audit", "seo", "content quality" ]
+    "Tags": [ "link checker", "broken links", "link audit", "seo", "content quality" ],
+    "Screenshots": [
+        {
+            "ImageUrl": "https://raw.githubusercontent.com/ChalmersLibrary/Umbraco.Community.LinkAudit/main/docs/screenshots/link-audit-dashboard.png",
+            "Caption": "The Link Audit dashboard: flagged hosts, broken external links and unverified links across all published content, with a scan summary and an on-demand rescan."
+        },
+        {
+            "ImageUrl": "https://raw.githubusercontent.com/ChalmersLibrary/Umbraco.Community.LinkAudit/main/docs/screenshots/link-audit-content-editor.png",
+            "Caption": "Click any result to open that page in a slide-in content editor over the dashboard — fix the link in place without losing your list."
+        }
+    ]
 }
