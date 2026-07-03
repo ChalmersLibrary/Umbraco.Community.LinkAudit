@@ -17,7 +17,9 @@
     <PackageId>Umbraco.Community.LinkAudit</PackageId>
     <Title>Link Audit</Title>
     <Version>1.0.0-beta.1</Version>
-    <Authors>Chalmers Library</Authors>
+    <Authors>Rolf Johansson, Claude (Anthropic)</Authors>
+    <Company>Chalmers University of Technology</Company>
+    <Copyright>Copyright © 2026 Rolf Johansson, Chalmers University of Technology</Copyright>
     <Description>A lightweight, single-purpose link auditor for Umbraco. Scans published content on a schedule (or on demand), reports broken external links and links that point at hosts you would rather keep internal — all from a read-only backoffice dashboard. Reads the content cache directly rather than crawling the rendered site.</Description>
     <PackageTags>umbraco umbraco-marketplace plugin package links link-checker broken-links seo audit</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

@@ -1,11 +1,11 @@
 {
     "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
     "AuthorDetails": {
-        "Name": "Chalmers Library",
+        "Name": "Rolf Johansson",
         "Url": "https://github.com/ChalmersLibrary"
     },
-    "Category": "Developer Tools",
-    "AlternateCategory": "Editor Tools",
+    "Category": "Editor Tools",
+    "AlternateCategory": "Developer Tools",
     "PackageType": "Package",
     "LicenseTypes": [ "Free" ],
     "DocumentationUrl": "https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit",

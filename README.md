@@ -79,6 +79,11 @@ The first match wins, in this order:
   Supporting Umbraco 15/16 would require multi-targeting (`net9.0;net10.0`) with per-target Umbraco
   references; Umbraco 13/14 is out of scope (old backoffice, synchronous cache API).
 
+## Author
+
+Built by Rolf Johansson at [Chalmers University of Technology](https://www.chalmers.se),
+co-authored with [Claude](https://www.anthropic.com/claude), Anthropic's AI assistant.
+
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © 2026 Rolf Johansson, Chalmers University of Technology
