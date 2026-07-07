@@ -1,6 +1,6 @@
 # Link Audit for Umbraco
 
-A lightweight, single-purpose **link auditor** for Umbraco 17+ (new backoffice). It scans your
+A lightweight, single-purpose **link auditor** for Umbraco 17.5.0 and later (new backoffice). It scans your
 published content on a schedule — or on demand — and surfaces, in a read-only backoffice dashboard:
 
 - **Broken external links** (404 / 410, plus timeouts and other unverifiable responses as warnings).
@@ -71,13 +71,12 @@ The first match wins, in this order:
 
 ## Requirements
 
-- **Umbraco 17+ on .NET 10.** This is a hard floor, not a preference:
-  - The dashboard and API use the **new backoffice + Management API** (Umbraco 14+) — they cannot run on Umbraco 13's AngularJS backoffice.
-  - Content is read via `IPublishedContentCache.GetByIdAsync`, part of the **Hybrid Cache** (Umbraco 15+).
+- **Umbraco 17.5.0 and later, on .NET 10.**
   - The assembly targets `net10.0`, which only **Umbraco 17** runs on.
-
-  Supporting Umbraco 15/16 would require multi-targeting (`net9.0;net10.0`) with per-target Umbraco
-  references; Umbraco 13/14 is out of scope (old backoffice, synchronous cache API).
+  - The scheduled crawl derives from `RecurringBackgroundJobBase` and overrides the
+    `RunJobAsync(CancellationToken)` method — both **new in Umbraco 17.5.0**. The token is threaded
+    through the crawl and every external HTTP probe. On 17.0–17.4 the base type simply doesn't exist, 
+    so the job fails to compile there.
 
 ## Author
 
