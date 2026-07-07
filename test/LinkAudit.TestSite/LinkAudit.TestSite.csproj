@@ -7,9 +7,15 @@
   </PropertyGroup>
 
 
+  <PropertyGroup>
+    <!-- Umbraco version to run the test site against. Defaults to the package's minimum (17.5).
+         Test against 18.x with:  dotnet run -p:UmbracoVersion=18.0.2 -->
+    <UmbracoVersion Condition="'$(UmbracoVersion)' == ''">17.5.0</UmbracoVersion>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms" Version="17.5.0" />
-    <PackageReference Include="Umbraco.Cms.DevelopmentMode.Backoffice" Version="17.5.0" />
+    <PackageReference Include="Umbraco.Cms" Version="$(UmbracoVersion)" />
+    <PackageReference Include="Umbraco.Cms.DevelopmentMode.Backoffice" Version="$(UmbracoVersion)" />
   </ItemGroup>
 
   <ItemGroup>
