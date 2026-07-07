@@ -11,6 +11,11 @@
          instead of under _content/. We ship no .cshtml views, so MVC Razor support is not needed. -->
     <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
 
+    <!-- build/ holds NuGet build assets (a .targets + appsettings schema) packed explicitly into
+         buildTransitive/ below; the template JSON is read at build time by StampUmbracoPackageManifest.
+         Keep both out of the SDK's default Content/None globs, or they'd leak into content//contentFiles/. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);build/**;umbraco-package.template.json</DefaultItemExcludes>
+
     <!-- The Umbraco version this package is compiled against, and the version of Umbraco it depends on.
          A build is binary-compatible only with the Umbraco MAJOR it was compiled against (interface members
          move between majors — e.g. IPublishedContent.Cultures moved to IPublishedElement in 18), so we ship
@@ -59,6 +64,15 @@
     <!-- Ship README + icon inside the NuGet package (not the marketplace file, which is host-side). -->
     <None Include="../../README.md" Pack="true" PackagePath="/" />
     <None Include="../../icon.png" Pack="true" PackagePath="/" Condition="Exists('../../icon.png')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- appsettings IntelliSense/validation for the "LinkAudit" section. The .props is auto-imported into
+         the consuming site (buildTransitive); it registers the schema with Umbraco's schema pipeline, which
+         copies the .json into the site and $ref's it from appsettings-schema.json. Both files must sit in
+         buildTransitive/ so $(MSBuildThisFileDirectory) resolves the schema next to the props. -->
+    <None Include="build/Umbraco.Community.LinkAudit.targets" Pack="true" PackagePath="buildTransitive/" />
+    <None Include="build/appsettings-schema.LinkAudit.json" Pack="true" PackagePath="buildTransitive/" />
   </ItemGroup>
 
   <!-- The backoffice "Installed packages" list shows umbraco-package.json's "version", which is independent

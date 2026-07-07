@@ -9,6 +9,11 @@ built against each major. **Install the version matching your Umbraco major.**
 
 ## [Unreleased]
 
+### Added
+- appsettings IntelliSense/validation for the `LinkAudit` section. The package ships a JSON schema and
+  registers it with Umbraco's schema pipeline (`buildTransitive`), so the consuming site auto-copies it and
+  adds the `$ref` to `appsettings-schema.json` on build — no manual setup.
+
 ### Fixed
 - Backoffice **Installed packages** now shows the real package version. `umbraco-package.json`'s
   `version` is stamped from the build version at pack time (`17.5.0` / `18.0.0`), instead of being

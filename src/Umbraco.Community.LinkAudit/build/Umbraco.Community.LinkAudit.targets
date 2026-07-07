@@ -1,0 +1,13 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--
+    Auto-imported into the consuming Umbraco site (buildTransitive). Registers the Link Audit appsettings
+    schema with Umbraco's own schema pipeline: Umbraco.Cms.Targets then copies this file into the site's
+    project directory and adds a $ref to it in appsettings-schema.json, so editors give IntelliSense and
+    validation for the "LinkAudit" section with zero setup. Weight orders it after Umbraco's own schema.
+  -->
+  <ItemGroup>
+    <UmbracoJsonSchemaFiles Include="$(MSBuildThisFileDirectory)appsettings-schema.LinkAudit.json" Weight="-80" />
+  </ItemGroup>
+
+</Project>
