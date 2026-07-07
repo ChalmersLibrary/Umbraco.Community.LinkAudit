@@ -1,6 +1,6 @@
 # Link Audit for Umbraco
 
-A lightweight, single-purpose **link auditor** for Umbraco 17.5.0 and later (new backoffice). It scans your
+A lightweight, single-purpose **link auditor** for Umbraco 17.5+ and 18 (new backoffice). It scans your
 published content on a schedule — or on demand — and surfaces, in a read-only backoffice dashboard:
 
 - **Broken external links** (404 / 410, plus timeouts and other unverifiable responses as warnings).
@@ -15,9 +15,21 @@ rendering correctly.
 
 ## Install
 
+Install the LinkAudit version that matches your Umbraco **major** — the package version tracks Umbraco
+(LinkAudit `17.x` targets Umbraco 17, `18.x` targets Umbraco 18):
+
 ```sh
-dotnet add package Umbraco.Community.LinkAudit
+# Umbraco 17
+dotnet add package Umbraco.Community.LinkAudit --version 17.5.0
+
+# Umbraco 18
+dotnet add package Umbraco.Community.LinkAudit --version 18.0.0
 ```
+
+> **Pin the version.** A LinkAudit build is compiled against — and only runtime-compatible with — the
+> Umbraco major it targets. NuGet installs the newest version by default, so `dotnet add package` *without*
+> `--version` would pull the latest major (e.g. `18.x`) onto a 17 site, where it will fail to resolve or
+> run. Always specify the version matching your Umbraco major.
 
 The package is a Razor Class Library — the backoffice dashboard assets ship inside it, so there is
 nothing to copy into `App_Plugins`. After install and restart, a **Link Audit** dashboard appears in the
@@ -71,12 +83,13 @@ The first match wins, in this order:
 
 ## Requirements
 
-- **Umbraco 17.5.0 and later, on .NET 10.**
-  - The assembly targets `net10.0`, which only **Umbraco 17** runs on.
+- **Umbraco 17.5+ or 18, on .NET 10.** Install the LinkAudit version matching your Umbraco major
+  (see [Install](#install)) — there is a separate build per major.
+  - The assembly targets `net10.0`, which both **Umbraco 17 and 18** run on.
   - The scheduled crawl derives from `RecurringBackgroundJobBase` and overrides the
     `RunJobAsync(CancellationToken)` method — both **new in Umbraco 17.5.0**. The token is threaded
-    through the crawl and every external HTTP probe. On 17.0–17.4 the base type simply doesn't exist, 
-    so the job fails to compile there.
+    through the crawl and every external HTTP probe. On 17.0–17.4 the base type simply doesn't exist,
+    so the `17.x` build requires **17.5.0 or later**.
 
 ## Author
 
