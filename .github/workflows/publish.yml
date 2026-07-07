@@ -1,5 +1,10 @@
 name: Publish to NuGet
 
+# Tag == package version == the Umbraco version this build targets:
+#   v17.5.0        -> package 17.5.0, built against Umbraco 17.5.0
+#   v18.0.0        -> package 18.0.0, built against Umbraco 18.0.0
+#   v18.0.0-beta.1 -> package 18.0.0-beta.1, still built against Umbraco 18.0.0
+# Push one tag per Umbraco major to release that major's build.
 on:
   push:
     tags:
@@ -20,19 +25,33 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Restore
-        run: dotnet restore Umbraco.Community.LinkAudit.slnx
+      - name: Resolve version from tag
+        id: ver
+        run: |
+          RAW="${GITHUB_REF_NAME#v}"          # 18.0.0  or  18.0.0-beta.1
+          BASE="${RAW%%-*}"                    # 18.0.0 (the Umbraco version to build against)
+          if [ "$RAW" != "$BASE" ]; then
+            SUFFIX="${RAW#*-}"                 # beta.1
+          else
+            SUFFIX=""
+          fi
+          if ! echo "$BASE" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Tag '$GITHUB_REF_NAME' must be v<major>.<minor>.<patch>[-suffix], e.g. v18.0.0 or v18.0.0-beta.1"
+            exit 1
+          fi
+          echo "umbraco=$BASE" >> "$GITHUB_OUTPUT"
+          echo "suffix=$SUFFIX" >> "$GITHUB_OUTPUT"
+          echo "Building against Umbraco $BASE; package version $RAW"
 
-      - name: Build
-        run: dotnet build Umbraco.Community.LinkAudit.slnx --configuration Release --no-restore
-
+      # Pack builds against the tag's Umbraco version (no --no-build): the shipped binary and its
+      # declared Umbraco dependency must match, or we'd repeat the 17-built-binary-on-18 break.
       - name: Pack
         run: >
           dotnet pack src/Umbraco.Community.LinkAudit/Umbraco.Community.LinkAudit.csproj
           --configuration Release
-          --no-build
           --output artifacts
-          -p:Version=${GITHUB_REF_NAME#v}
+          -p:UmbracoVersion=${{ steps.ver.outputs.umbraco }}
+          -p:VersionSuffix=${{ steps.ver.outputs.suffix }}
 
       - name: NuGet login (OIDC -> temp API key)
         uses: NuGet/login@v1
