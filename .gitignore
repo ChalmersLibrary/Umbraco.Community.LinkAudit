@@ -19,3 +19,6 @@ artifacts/
 ## Umbraco test-site runtime data (if a test site is added under test/)
 test/**/umbraco/Data/
 test/**/appsettings.Local.json
+
+## Generated at build time from umbraco-package.template.json (version stamped from the package version)
+src/Umbraco.Community.LinkAudit/wwwroot/App_Plugins/UmbracoCommunity.LinkAudit/umbraco-package.json

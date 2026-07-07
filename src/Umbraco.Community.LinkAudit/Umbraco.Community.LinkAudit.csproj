@@ -61,4 +61,18 @@
     <None Include="../../icon.png" Pack="true" PackagePath="/" Condition="Exists('../../icon.png')" />
   </ItemGroup>
 
+  <!-- The backoffice "Installed packages" list shows umbraco-package.json's "version", which is independent
+       of the NuGet/assembly version. Stamp it from $(Version) so it always matches the package (17.5.0 for
+       the Umbraco 17 build, 18.0.0 for the 18 build). The served/packed manifest is generated from
+       umbraco-package.template.json and is gitignored; run before static web assets are collected. -->
+  <Target Name="StampUmbracoPackageManifest"
+          BeforeTargets="ResolveProjectStaticWebAssets;ResolveStaticWebAssetsInputs;AssignTargetPaths;BeforeBuild">
+    <PropertyGroup>
+      <_UmbPkgTemplate>$(MSBuildProjectDirectory)/umbraco-package.template.json</_UmbPkgTemplate>
+      <_UmbPkgOutput>$(MSBuildProjectDirectory)/wwwroot/App_Plugins/UmbracoCommunity.LinkAudit/umbraco-package.json</_UmbPkgOutput>
+      <_UmbPkgContent>$([System.IO.File]::ReadAllText('$(_UmbPkgTemplate)').Replace('__PACKAGE_VERSION__', '$(Version)'))</_UmbPkgContent>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(_UmbPkgOutput)" Lines="$(_UmbPkgContent)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+  </Target>
+
 </Project>

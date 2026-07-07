@@ -1,7 +1,7 @@
 {
     "id": "Umbraco.Community.LinkAudit",
     "name": "Link Audit",
-    "version": "1.0.0",
+    "version": "__PACKAGE_VERSION__",
     "author": "Chalmers Library",
     "extensions": [
         {
