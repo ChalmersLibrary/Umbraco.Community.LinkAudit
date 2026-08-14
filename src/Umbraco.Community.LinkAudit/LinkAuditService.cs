@@ -97,11 +97,9 @@ public sealed partial class LinkAuditService : ILinkAuditService
 
                         pagesScanned++;
 
-                        var cultures = page.Cultures.Keys.ToList();
-                        if (cultures.Count == 0)
-                        {
-                            cultures.Add(string.Empty);
-                        }
+                        // Invariant content reports no cultures — scan it once with an empty variation context.
+                        IReadOnlyList<string> published = PublishedContentCompat.Cultures(page);
+                        IReadOnlyList<string> cultures = published.Count > 0 ? published : [string.Empty];
 
                         foreach (var culture in cultures)
                         {
@@ -109,6 +107,11 @@ public sealed partial class LinkAuditService : ILinkAuditService
 
                             string? pageUrl = SafeUrl(page, culture);
                             siteRoot ??= SafeAbsoluteRoot(page, culture);
+
+                            // Read the name once per culture rather than once per link: it resolves through
+                            // reflection (see PublishedContentCompat) and it is culture-sensitive, so it has to
+                            // be read inside this loop — after the variation context is set — but no deeper.
+                            string pageName = PublishedContentCompat.Name(page) ?? "(unnamed)";
 
                             foreach (IPublishedProperty prop in page.Properties)
                             {
@@ -124,7 +127,7 @@ public sealed partial class LinkAuditService : ILinkAuditService
                                 foreach (Match m in UrlRegex().Matches(source))
                                 {
                                     linksScanned++;
-                                    Classify(m.Groups[1].Value, page, key, pageUrl, culture, prop.Alias, settings, seen, findings, externalRefs);
+                                    Classify(m.Groups[1].Value, pageName, key, pageUrl, culture, prop.Alias, settings, seen, findings, externalRefs);
                                 }
                             }
                         }
@@ -143,7 +146,7 @@ public sealed partial class LinkAuditService : ILinkAuditService
 
     private void Classify(
         string rawUrl,
-        IPublishedContent page,
+        string pageName,
         Guid key,
         string? pageUrl,
         string culture,
@@ -173,7 +176,6 @@ public sealed partial class LinkAuditService : ILinkAuditService
         }
 
         string host = uri.Host;
-        string pageName = page.Name ?? "(unnamed)";
 
         if (settings.IgnoredHosts.Any(h => host.Equals(h, StringComparison.OrdinalIgnoreCase)))
         {

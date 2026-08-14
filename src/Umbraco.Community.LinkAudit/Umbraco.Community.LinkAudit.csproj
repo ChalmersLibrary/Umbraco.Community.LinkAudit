@@ -16,22 +16,42 @@
          Keep both out of the SDK's default Content/None globs, or they'd leak into content//contentFiles/. -->
     <DefaultItemExcludes>$(DefaultItemExcludes);build/**;umbraco-package.template.json</DefaultItemExcludes>
 
-    <!-- The Umbraco version this package is compiled against, and the version of Umbraco it depends on.
-         A build is binary-compatible only with the Umbraco MAJOR it was compiled against (interface members
-         move between majors — e.g. IPublishedContent.Cultures moved to IPublishedElement in 18), so we ship
-         one build per major. Build a given line with e.g. dotnet pack -p:UmbracoVersion=18.0.0 -->
-    <UmbracoVersion Condition="'$(UmbracoVersion)' == ''">17.5.0</UmbracoVersion>
+    <!-- ONE build for every supported Umbraco major.
+         The only members that move between majors are IPublishedContent.Name/.Cultures (pushed down to
+         IPublishedElement in 18); PublishedContentCompat resolves those by name at runtime, and every other
+         Umbraco member this package touches is declaration-identical across majors. So the assembly is
+         compiled once, against the OLDEST supported version, and runs against whatever the consuming site
+         resolves.
+
+         UmbracoFloorVersion is the minimum: 17.5.0, set by RecurringBackgroundJobBase.RunJobAsync(
+         CancellationToken), which does not exist before it.
+         UmbracoNextMajorVersion is an exclusive upper bound. Without it, this package would install onto a
+         future major it has never been tested against and fail at RUNTIME; with it, an untested major is a
+         restore-time error instead. Raise it deliberately, after testing that major. -->
+    <UmbracoFloorVersion>17.5.0</UmbracoFloorVersion>
+    <UmbracoNextMajorVersion>19.0.0</UmbracoNextMajorVersion>
+    <UmbracoVersionRange>[$(UmbracoFloorVersion), $(UmbracoNextMajorVersion))</UmbracoVersionRange>
   </PropertyGroup>
 
   <!-- NuGet package metadata -->
   <PropertyGroup>
     <PackageId>Umbraco.Community.LinkAudit</PackageId>
     <Title>Link Audit</Title>
-    <!-- Package version tracks the Umbraco version it is built against: LinkAudit 17.5.0 targets Umbraco
-         17.5.0, 18.0.0 targets Umbraco 18, etc. Single source of truth is UmbracoVersion (above). Append a
-         pre-release/revision suffix when needed, e.g. dotnet pack -p:UmbracoVersion=18.0.0 -p:VersionSuffix=beta.1 -->
-    <Version Condition="'$(VersionSuffix)' == ''">$(UmbracoVersion)</Version>
-    <Version Condition="'$(VersionSuffix)' != ''">$(UmbracoVersion)-$(VersionSuffix)</Version>
+    <!-- LinkAudit's OWN version — plain semver, carrying NO information about Umbraco.
+         Which Umbraco versions this package supports is declared by UmbracoVersionRange below, which the
+         Marketplace reads and NuGet enforces. A version number cannot express a range, so it does not try:
+         encoding the Umbraco major here is what previously forced a separate release per major and left no
+         digit free for LinkAudit's own fixes.
+
+         2.x because the packaging model changed: 1.x/17.x/18.x shipped one binary per Umbraco major and
+         had to be installed with an explicit version pin; 2.x is a single binary for all supported majors
+         and installs with a bare `dotnet add package`. NOTE: 17.5.0 and 18.0.0 must be UNLISTED on
+         nuget.org for this to resolve as latest — NuGet picks the highest LISTED version, and 18.0.0 is
+         greater than 2.0.0. Unlisting is not deletion: anyone pinned to an old version keeps restoring
+         it. -->
+    <LinkAuditVersion Condition="'$(LinkAuditVersion)' == ''">2.0.0</LinkAuditVersion>
+    <Version Condition="'$(VersionSuffix)' == ''">$(LinkAuditVersion)</Version>
+    <Version Condition="'$(VersionSuffix)' != ''">$(LinkAuditVersion)-$(VersionSuffix)</Version>
     <Authors>Rolf Johansson, Claude (Anthropic)</Authors>
     <Company>Chalmers University of Technology</Company>
     <Copyright>Copyright © 2026 Rolf Johansson, Chalmers University of Technology</Copyright>
@@ -56,8 +76,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="$(UmbracoVersion)" />
-    <PackageReference Include="Umbraco.Cms.Api.Management" Version="$(UmbracoVersion)" />
+    <!-- A range, not a pin: NuGet compiles against the lowest version in the range (the floor) and lets the
+         consuming site resolve any higher version within it. -->
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="$(UmbracoVersionRange)" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="$(UmbracoVersionRange)" />
   </ItemGroup>
 
   <ItemGroup>
