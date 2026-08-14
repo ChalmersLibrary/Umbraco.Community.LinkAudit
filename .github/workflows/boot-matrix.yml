@@ -1,0 +1,30 @@
+name: Boot matrix
+
+# Boots a real Umbraco site on each supported version, using the single LinkAudit binary, and asserts a
+# full audit completes with correctly-named findings.
+#
+# Reusable on purpose: both CI and the release workflow call it, so a release can never ship a binary that
+# has not been booted on every supported major. Keep the version list in step with UmbracoVersionRange in
+# the csproj — the matrix is the evidence for the range the package claims.
+on:
+  workflow_call:
+
+jobs:
+  boot:
+    name: Umbraco ${{ matrix.umbraco }}
+    runs-on: ubuntu-latest
+    strategy:
+      # Never cancel siblings: knowing WHICH majors broke is the whole point of the matrix.
+      fail-fast: false
+      matrix:
+        # Floor and current tip of each supported major.
+        umbraco: ['17.5.0', '17.6.1', '18.0.0', '18.1.0']
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Boot Umbraco ${{ matrix.umbraco }} and run an audit
+        run: ./test/boot-matrix.sh ${{ matrix.umbraco }}

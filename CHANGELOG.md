@@ -3,21 +3,51 @@
 All notable changes to Link Audit are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-This package versions **per Umbraco major**: `17.x` targets Umbraco 17, `18.x` targets Umbraco 18.
-A single change set therefore ships as a matched pair of versions (e.g. `17.5.0` **and** `18.0.0`),
-built against each major. **Install the version matching your Umbraco major.**
+From **2.0.0** this package uses plain semver, independent of Umbraco's version numbers. Supported Umbraco
+versions are declared by the NuGet dependency range and shown on the Marketplace — not encoded in the
+package version. **Install the latest version; there is nothing to pin.**
 
-## [Unreleased]
+Releases before 2.0.0 shipped one binary per Umbraco major, versioned to match it (`17.x`, `18.x`).
+
+## [2.0.0] — unreleased
+
+One package for every supported Umbraco major, and plain semver. Functionally identical to `17.5.0`/`18.0.0`
+— this release is about packaging.
+
+### Changed
+- **A single build now supports Umbraco 17.5 – 18.x.** Previously there was one binary per major and
+  installing required `--version`. Now `dotnet add package Umbraco.Community.LinkAudit` is correct on every
+  supported version. Only `IPublishedContent.Name`/`.Cultures` differ between the majors (Umbraco 18 moved
+  them to `IPublishedElement`); they are resolved by name at runtime, and every other Umbraco member the
+  package uses is declaration-identical across majors.
+- **Versioning is now plain semver** and carries no information about Umbraco. Encoding the Umbraco major in
+  the version left no digit free for LinkAudit's own fixes: patching two majors meant inventing versions
+  like `17.5.0.1`. Compatibility belongs in the dependency range, which can express a range — a version
+  number cannot.
+
+### Fixed
+- **The declared Umbraco dependency is now bounded** (`[17.5.0, 19.0.0)`). Previous releases declared
+  `>= 17.5.0` / `>= 18.0.0` with no upper bound, so the Marketplace advertised them as supporting every
+  future Umbraco major, including majors they crash on. CI now fails the build if the range is ever
+  unbounded again, and a release is gated on booting a real site against every version in the range.
+- Backoffice **Installed packages** now shows the real package version. `umbraco-package.json`'s `version`
+  is stamped from the build version at pack time, instead of being hardcoded to `1.0.0`.
 
 ### Added
 - appsettings IntelliSense/validation for the `LinkAudit` section. The package ships a JSON schema and
   registers it with Umbraco's schema pipeline (`buildTransitive`), so the consuming site auto-copies it and
   adds the `$ref` to `appsettings-schema.json` on build — no manual setup.
+- `test/boot-matrix.sh`, which boots a real Umbraco site on each supported version and asserts a full audit
+  completes. This is the safety net that replaces the per-major builds: with one binary, NuGet can no longer
+  catch a cross-major break at restore time.
 
-### Fixed
-- Backoffice **Installed packages** now shows the real package version. `umbraco-package.json`'s
-  `version` is stamped from the build version at pack time (`17.5.0` / `18.0.0`), instead of being
-  hardcoded to `1.0.0` independent of the NuGet version.
+### Upgrading
+Remove any `--version` pin (or `Version="17.x"` / `"18.x"` in your csproj) and take the latest. No
+configuration or content changes are needed.
+
+> **Maintainer note:** `17.5.0` and `18.0.0` must be **unlisted** on nuget.org for `2.x` to resolve as
+> latest — NuGet picks the highest *listed* version, and `18.0.0` > `2.0.0`. Unlisting is not deletion:
+> anyone pinned to an old version keeps restoring it.
 
 ## [17.5.0] / [18.0.0] — 2026-07-07
 
@@ -44,7 +74,7 @@ First stable release. Same feature set on both majors; `17.5.0` targets Umbraco 
 
 - Initial beta release.
 
-[Unreleased]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/compare/v18.0.0...HEAD
+[2.0.0]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/compare/v18.0.0...HEAD
 [17.5.0]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v17.5.0
 [18.0.0]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v18.0.0
 [1.0.0-beta.1]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v1.0.0-beta.1
