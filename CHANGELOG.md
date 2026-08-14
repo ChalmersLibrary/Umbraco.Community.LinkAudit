@@ -9,7 +9,7 @@ package version. **Install the latest version; there is nothing to pin.**
 
 Releases before 2.0.0 shipped one binary per Umbraco major, versioned to match it (`17.x`, `18.x`).
 
-## [2.0.0] — unreleased
+## [2.0.0] — 2026-08-14
 
 One package for every supported Umbraco major, and plain semver. Functionally identical to `17.5.0`/`18.0.0`
 — this release is about packaging.
@@ -74,7 +74,8 @@ First stable release. Same feature set on both majors; `17.5.0` targets Umbraco 
 
 - Initial beta release.
 
-[2.0.0]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/compare/v18.0.0...HEAD
+[Unreleased]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v2.0.0
 [17.5.0]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v17.5.0
 [18.0.0]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v18.0.0
 [1.0.0-beta.1]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v1.0.0-beta.1
