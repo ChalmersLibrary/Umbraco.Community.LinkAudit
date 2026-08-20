@@ -9,37 +9,42 @@ package version. **Install the latest version; there is nothing to pin.**
 
 Releases before 2.0.0 shipped one binary per Umbraco major, versioned to match it (`17.x`, `18.x`).
 
+## [2.0.1] — 2026-08-20
+
+**If you installed `2.0.0`, upgrade.** No configuration changes.
+
+### Fixed
+- **The Link Audit dashboard is back in the backoffice.** `2.0.0` was packaged without the manifest Umbraco
+  uses to discover a package, so the dashboard never appeared and the package was missing from **Installed
+  packages**. Scheduled audits were unaffected and kept running.
+
+> **Maintainer note:** unlist `2.0.0` on nuget.org — a published version can only be superseded, not replaced.
+
 ## [2.0.0] — 2026-08-14
+
+> **Do not use: this release is missing its backoffice manifest — see [2.0.1].** Superseded, and unlisted on
+> nuget.org.
 
 One package for every supported Umbraco major, and plain semver. Functionally identical to `17.5.0`/`18.0.0`
 — this release is about packaging.
 
 ### Changed
 - **A single build now supports Umbraco 17.5 – 18.x.** Previously there was one binary per major and
-  installing required `--version`. Now `dotnet add package Umbraco.Community.LinkAudit` is correct on every
-  supported version. Only `IPublishedContent.Name`/`.Cultures` differ between the majors (Umbraco 18 moved
-  them to `IPublishedElement`); they are resolved by name at runtime, and every other Umbraco member the
-  package uses is declaration-identical across majors.
-- **Versioning is now plain semver** and carries no information about Umbraco. Encoding the Umbraco major in
-  the version left no digit free for LinkAudit's own fixes: patching two majors meant inventing versions
-  like `17.5.0.1`. Compatibility belongs in the dependency range, which can express a range — a version
-  number cannot.
+  installing required `--version`; now `dotnet add package Umbraco.Community.LinkAudit` is correct on every
+  supported version.
+- **Versioning is now plain semver** and carries no information about Umbraco — hence `2.0.0` after `18.0.0`.
+  Which Umbraco versions are supported is declared by the dependency range, which can express a range; a
+  version number cannot.
 
 ### Fixed
 - **The declared Umbraco dependency is now bounded** (`[17.5.0, 19.0.0)`). Previous releases declared
   `>= 17.5.0` / `>= 18.0.0` with no upper bound, so the Marketplace advertised them as supporting every
-  future Umbraco major, including majors they crash on. CI now fails the build if the range is ever
-  unbounded again, and a release is gated on booting a real site against every version in the range.
-- Backoffice **Installed packages** now shows the real package version. `umbraco-package.json`'s `version`
-  is stamped from the build version at pack time, instead of being hardcoded to `1.0.0`.
+  future Umbraco major, including majors they crash on.
+- Backoffice **Installed packages** now shows the real package version, instead of always `1.0.0`.
 
 ### Added
-- appsettings IntelliSense/validation for the `LinkAudit` section. The package ships a JSON schema and
-  registers it with Umbraco's schema pipeline (`buildTransitive`), so the consuming site auto-copies it and
-  adds the `$ref` to `appsettings-schema.json` on build — no manual setup.
-- `test/boot-matrix.sh`, which boots a real Umbraco site on each supported version and asserts a full audit
-  completes. This is the safety net that replaces the per-major builds: with one binary, NuGet can no longer
-  catch a cross-major break at restore time.
+- appsettings IntelliSense/validation for the `LinkAudit` section — the package ships a JSON schema and
+  registers it with Umbraco's schema pipeline, so there is nothing to set up by hand.
 
 ### Upgrading
 Remove any `--version` pin (or `Version="17.x"` / `"18.x"` in your csproj) and take the latest. No
@@ -67,14 +72,15 @@ First stable release. Same feature set on both majors; `17.5.0` targets Umbraco 
 ### Notes
 - Built for **.NET 10**. The scheduled crawl uses `RecurringBackgroundJobBase.RunJobAsync(CancellationToken)`,
   new in Umbraco 17.5.0, so the `17.x` build requires **17.5.0 or later**.
-- A build is runtime-compatible only with the Umbraco major it targets (some interfaces move between
-  majors, e.g. `IPublishedContent.Cultures` moved to `IPublishedElement` in 18) — hence the per-major versions.
+- A build only runs on the Umbraco major it targets — hence the per-major versions. Install the one matching
+  your site, or take `2.0.1` or later, where this no longer applies.
 
 ## [1.0.0-beta.1] — 2026-07-06
 
 - Initial beta release.
 
-[Unreleased]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v2.0.1
 [2.0.0]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v2.0.0
 [17.5.0]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v17.5.0
 [18.0.0]: https://github.com/ChalmersLibrary/Umbraco.Community.LinkAudit/releases/tag/v18.0.0

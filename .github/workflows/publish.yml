@@ -59,16 +59,10 @@ jobs:
           -p:LinkAuditVersion=${{ steps.ver.outputs.version }}
           -p:VersionSuffix=${{ steps.ver.outputs.suffix }}
 
-      - name: Assert the Umbraco dependency range is bounded
-        run: |
-          set -euo pipefail
-          NUPKG=$(ls artifacts/*.nupkg | grep -v symbols | head -1)
-          unzip -p "$NUPKG" '*.nuspec' > /tmp/pkg.nuspec
-          grep -E '<dependency id="Umbraco' /tmp/pkg.nuspec
-          if ! grep -qE '<dependency id="Umbraco[^"]*" version="\[[^)]*\)"' /tmp/pkg.nuspec; then
-            echo "::error::Refusing to publish: the Umbraco dependency range is unbounded."
-            exit 1
-          fi
+      # Last gate before the push is irreversible: a published version cannot be replaced, only superseded.
+      # Asserts the backoffice manifest is actually in the nupkg and the dependency range is bounded.
+      - name: Assert the package is installable and discoverable
+        run: ./test/assert-package.sh
 
       - name: NuGet login (OIDC -> temp API key)
         uses: NuGet/login@v1

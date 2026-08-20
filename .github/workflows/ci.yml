@@ -23,22 +23,11 @@ jobs:
       - name: Pack
         run: dotnet pack src/Umbraco.Community.LinkAudit/Umbraco.Community.LinkAudit.csproj -c Release --output artifacts
 
-      # The declared range is the package's compatibility contract and the only thing the Marketplace reads.
-      # An unbounded range would advertise support for Umbraco majors that have never been tested — the
-      # defect this project deliberately avoids.
-      - name: Assert the Umbraco dependency range is bounded
-        run: |
-          set -euo pipefail
-          NUPKG=$(ls artifacts/*.nupkg | grep -v symbols | head -1)
-          echo "Inspecting $NUPKG"
-          unzip -p "$NUPKG" '*.nuspec' > /tmp/pkg.nuspec
-          grep -E '<dependency id="Umbraco' /tmp/pkg.nuspec
-          if grep -qE '<dependency id="Umbraco[^"]*" version="\[[^)]*\)"' /tmp/pkg.nuspec; then
-            echo "OK: Umbraco dependencies declare a bounded range."
-          else
-            echo "::error::Umbraco dependency range is unbounded. An open range makes the Marketplace claim support for untested majors."
-            exit 1
-          fi
+      # Inspect the real artifact: that the backoffice manifest is in it (Umbraco discovers the package by
+      # that file, and a build alone cannot tell you it was packed) and that the Umbraco dependency range
+      # is bounded (the compatibility contract, and the only thing the Marketplace reads).
+      - name: Assert the package is installable and discoverable
+        run: ./test/assert-package.sh
 
       - uses: actions/upload-artifact@v4
         with:
