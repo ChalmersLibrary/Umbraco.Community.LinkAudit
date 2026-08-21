@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -46,6 +47,13 @@ public sealed partial class LinkAuditService : ILinkAuditService
         _options = options;
         _logger = logger;
     }
+
+    /// <summary>
+    /// Package version used in the default User-Agent: the assembly informational version with any
+    /// "+{commit sha}" build metadata trimmed ("2.0.1+4a4032c…" becomes "2.0.1"), so a prerelease suffix
+    /// such as "-rc.1" is kept. Resolved once — the assembly cannot change while the process runs.
+    /// </summary>
+    private static readonly string PackageVersion = ResolvePackageVersion();
 
     [GeneratedRegex("""(?:["']|\\+(?:u002[27]|["']))(https?://[^\s"'<>\\)}]+)""", RegexOptions.IgnoreCase)]
     private static partial Regex UrlRegex();
@@ -340,7 +348,10 @@ public sealed partial class LinkAuditService : ILinkAuditService
         }
     }
 
-    /// <summary>Configured User-Agent verbatim, or a default that references the running site's own host.</summary>
+    /// <summary>
+    /// Configured User-Agent verbatim, or a default that carries the package version and references the
+    /// running site's own host.
+    /// </summary>
     private static string ResolveUserAgent(LinkAuditSettings settings, string? siteRoot)
     {
         if (!string.IsNullOrWhiteSpace(settings.UserAgent))
@@ -349,8 +360,23 @@ public sealed partial class LinkAuditService : ILinkAuditService
         }
 
         return string.IsNullOrEmpty(siteRoot)
-            ? "LinkAudit/1.0"
-            : $"LinkAudit/1.0 (+{siteRoot})";
+            ? $"LinkAudit/{PackageVersion}"
+            : $"LinkAudit/{PackageVersion} (+{siteRoot})";
+    }
+
+    private static string ResolvePackageVersion()
+    {
+        Assembly assembly = typeof(LinkAuditService).Assembly;
+
+        // AssemblyInformationalVersion is emitted from $(Version) by default, but a host that strips
+        // attributes can drop it — fall back to the three-part assembly version rather than claiming 1.0.
+        if (assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion is { Length: > 0 } informational)
+        {
+            int metadata = informational.IndexOf('+');
+            return metadata < 0 ? informational : informational[..metadata];
+        }
+
+        return assembly.GetName().Version?.ToString(3) ?? "0.0.0";
     }
 
     private static string? SafeGetSourceValue(IPublishedProperty prop, string culture)

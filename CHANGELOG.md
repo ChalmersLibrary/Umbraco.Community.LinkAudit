@@ -9,6 +9,14 @@ package version. **Install the latest version; there is nothing to pin.**
 
 Releases before 2.0.0 shipped one binary per Umbraco major, versioned to match it (`17.x`, `18.x`).
 
+## [Unreleased]
+
+### Changed
+- **The default User-Agent now carries the real package version** — `LinkAudit/2.0.1 (+https://example.com)`
+  rather than a hardcoded `LinkAudit/1.0`, which had not moved since `1.0`. It is read from the assembly's
+  informational version, so it tracks releases by itself. A configured `LinkAudit:UserAgent` is still sent
+  verbatim, unchanged.
+
 ## [2.0.1] — 2026-08-20
 
 **If you installed `2.0.0`, upgrade.** No configuration changes.

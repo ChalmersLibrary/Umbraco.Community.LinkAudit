@@ -46,8 +46,9 @@ public sealed class LinkAuditSettings
 
     /// <summary>
     /// User-Agent header sent on external probes. When left empty, a default of
-    /// <c>LinkAudit/1.0 (+{site root})</c> is used, where the site root is resolved from the
-    /// running site's own absolute URL at crawl time (so it reflects the actual host, be that staging or production).
+    /// <c>LinkAudit/{package version} (+{site root})</c> is used, where the version is the package's own
+    /// and the site root is resolved from the running site's absolute URL at crawl time (so it reflects the
+    /// actual host, be that staging or production).
     /// </summary>
     public string? UserAgent { get; set; }
 

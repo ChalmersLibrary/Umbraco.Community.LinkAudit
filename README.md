@@ -39,7 +39,7 @@ mean it works with no configuration at all.
     "FlaggedHostPatterns": [ "*.umbraco.io" ], // hosts that should never appear as absolute links ("*." wildcard ok)
     "IgnoredHosts": [],                   // hosts excluded from the audit entirely (never flagged/probed/reported)
     "ExternalCheckEnabled": true,         // HTTP-probe external links for 404s
-    "UserAgent": "",                      // empty = "LinkAudit/1.0 (+<your site root>)"
+    "UserAgent": "",                      // empty = "LinkAudit/<package version> (+<your site root>)"
     "IgnoredStatusCodes": [],             // treat these codes as OK (e.g. [401, 403] for login-gated links)
     "ExternalTimeoutSeconds": 10,
     "ExternalConcurrency": 8,
